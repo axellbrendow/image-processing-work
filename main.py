@@ -3,6 +3,7 @@ from typing import List, Dict
 
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 
 from PIL import ImageTk, Image
 
@@ -124,6 +125,10 @@ class MyWindow:
                     self.images[dirname].append(Image.open(caminho_completo))
 
     def load_images(self):
+        if not os.path.exists('imagens'):
+            messagebox.showinfo('A pasta imagens não foi encontrada')
+            exit(0)
+
         self.images: Dict[str, List[Image.Image]] = {
             "1": [],
             "2": [],
