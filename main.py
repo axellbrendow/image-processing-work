@@ -150,6 +150,29 @@ class MyWindow:
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self.root.quit)
 
+        self.options_menu = tk.Menu(self.main_menu)
+        self.main_menu.add_cascade(label="Opções", menu=self.options_menu)
+        self.options_menu.add_command(
+            label="ler o diretório de imagens de treino/teste",
+            command=self.load_images
+        )
+        self.options_menu.add_command(
+            label="selecionar as características a serem usadas",
+            command=lambda: None
+        )
+        self.options_menu.add_command(
+            label="treinar o classificador",
+            command=lambda: None
+        )
+        self.options_menu.add_command(
+            label="calcular e exibir as características para a imagem visualizada ou área selecionada",
+            command=lambda: None
+        )
+        self.options_menu.add_command(
+            label="classificar a imagem ou a região de interesse selecionada com o mouse",
+            command=lambda: None
+        )
+
         self.images_menu = tk.Menu(self.main_menu)
         self.main_menu.add_cascade(label="Imagens", menu=self.images_menu)
 
