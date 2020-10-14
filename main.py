@@ -126,7 +126,7 @@ class MyWindow:
 
     def load_images(self):
         if not os.path.exists('imagens'):
-            messagebox.showinfo('A pasta imagens não foi encontrada')
+            messagebox.showinfo('Erro', 'A pasta imagens não foi encontrada')
             exit(0)
 
         self.images: Dict[str, List[Image.Image]] = {
