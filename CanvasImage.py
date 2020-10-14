@@ -6,6 +6,8 @@ from tkinter import ttk
 
 from PIL import ImageTk, Image
 
+# from https://stackoverflow.com/a/48137257/4267880
+
 class AutoScrollbar(ttk.Scrollbar):
     """ A scrollbar that hides itself if it's not needed. Works only for grid geometry manager """
     def set(self, lo, hi):
