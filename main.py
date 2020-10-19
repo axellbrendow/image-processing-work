@@ -83,8 +83,8 @@ class MyWindow:
         x_offset = x - box_image[0] # offset from image corner inside canvas
         y_offset = y - box_image[1]
         
-        x0 = max(0, x_offset - 63)
-        y0 = max(0, y_offset - 63)
+        x0 = max(0, x_offset - 64)
+        y0 = max(0, y_offset - 64)
         x1 = min(self.original_img.width, x_offset + 64)
         y1 = min(self.original_img.height, y_offset + 64)
 
