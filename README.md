@@ -22,7 +22,7 @@ python3 -m pip install -r requirements.txt
 python3 main.py
 ```
 
-## Bibliografia
+## Referências
 
 - https://ieeexplore.ieee.org/document/4309314
 - https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python
