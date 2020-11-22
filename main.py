@@ -15,6 +15,8 @@ from CanvasImage import CanvasImage
 from Algorithms import Algorithms
 
 class MyWindow:
+    BIRADS_CLASSES = ["1", "2", "3", "4"]
+
     def __init__(self) -> None:
         self.root = tk.Tk()
         self.root.title("Image Classifier")
@@ -27,35 +29,47 @@ class MyWindow:
         self.cropped_img = self.algorithms.images["1"][0]
 
         self.config_menu()
-        self.load_images()
+        self.create_original_img_ui_elements()
+        self.create_cropped_img_ui_elements()
 
-        self.original_img = self.images["1"][0]
-        self.cropped_img = self.images["2"][0]
+        self.root.mainloop()
 
+    def create_original_img_ui_elements(self):
         self.original_img_title = tk.Label(text="Original")
         self.original_img_title.grid(row=1, column=1, pady=15)
+
         self.root.rowconfigure(2, weight=1)  # make the CanvasImage widget expandable
         self.root.columnconfigure(1, weight=1)
+
         self.canvasimage = CanvasImage(self.root, self.original_img.filename)  # create widget
         self.canvasimage.bind("<Button-1>", self.original_img_click_event)
         self.canvasimage.grid(row=2, column=1)  # show widget
+
         self.original_img_label_text = tk.Label(text=self.original_img.filename)
         self.original_img_label_text.grid(row=3, column=1, padx=30)
 
-        self.cropped_img_title = tk.Label(text="Cortada")
-        self.cropped_img_title.grid(row=1, column=2, pady=15)
-        self.cropped_img_label = tk.Label(image=ImageTk.PhotoImage(self.cropped_img))
-        self.cropped_img_label.grid(row=2, column=2, padx=30, pady=30)
-        self.cropped_img_label.bind("<Button-1>", print)
-        self.cropped_img_label_text = tk.Label(text=self.cropped_img.filename)
-        self.cropped_img_label_text.grid(row=3, column=2, padx=30)
+    def create_cropped_img_ui_elements(self):
+        tk_image = ImageTk.PhotoImage(self.cropped_img)
 
-        self.root.mainloop()
+        self.cropped_img_title = tk.Label(text="Cropped")
+        self.cropped_img_title.grid(row=1, column=2, pady=15)
+
+        self.cropped_img_label = tk.Label(image=tk_image)
+        self.cropped_img_label.photo_ref = tk_image
+        self.cropped_img_label.grid(row=2, column=2, padx=30, pady=30)
+
+        self.cropped_img_label_text = tk.Label(
+            text=os.path.basename(self.cropped_img.filename))
+        self.cropped_img_label_text.grid(row=3, column=2, padx=30)
 
     def load_original_image(
         self,
         image_path: str
     ):
+        # if image_path[-4:] == '.dcm':
+        #     self.original_img = pydicom.dcmread(image_path).pixel_array*128
+        # else:
+
         self.original_img = Image.open(image_path)
 
         self.canvasimage = CanvasImage(self.root, image_path)  # create widget
@@ -64,61 +78,56 @@ class MyWindow:
 
         self.original_img_label_text.configure(text=os.path.basename(image_path))
 
-    def load_cropped_image(
-        self,
-        image_path: str,
-        img_label: tk.Label,
-        img_text_label: tk.Label
-    ):
-        image = Image.open(image_path)
-        self.cropped_img = image
-        tk_image = ImageTk.PhotoImage(image)
-        img_label.configure(image=tk_image)
-        img_label.photo_ref = tk_image
-        img_text_label.configure(text=os.path.basename(image_path))
+    def load_cropped_image(self, image_path: str):
+        self.cropped_img = Image.open(image_path)
+        tk_image = ImageTk.PhotoImage(self.cropped_img)
 
-    def original_img_click_event(self, event: tk.Event):
+        self.cropped_img_label.configure(image=tk_image)
+        self.cropped_img_label.photo_ref = tk_image
+
+        self.cropped_img_label_text.configure(text=os.path.basename(image_path))
+
+    def get_cropped_image_path(self):
         original_filename = os.path.basename(self.original_img.filename)
         name, extension = os.path.splitext(original_filename)
-        cropped_image_path = self.original_img.filename.replace(
+        return self.original_img.filename.replace(
             original_filename,
             f"{name}_cropped{extension}"
         )
-        x = self.canvasimage.canvas.canvasx(event.x)
-        y = self.canvasimage.canvas.canvasy(event.y)
+
+    def crop_original_img(self, click_x, click_y):
+        x = self.canvasimage.canvas.canvasx(click_x)
+        y = self.canvasimage.canvas.canvasy(click_y)
 
         if self.canvasimage.outside(x, y): return
 
-        box_image = self.canvasimage.canvas.coords(self.canvasimage.container)
+        rectangle_coords = self.canvasimage.get_drawing_rectangle_coords(click_x, click_y)
 
-        x_offset = x - box_image[0] # offset from image corner inside canvas
-        y_offset = y - box_image[1]
-        
-        x0 = max(0, x_offset - 64)
-        y0 = max(0, y_offset - 64)
-        x1 = min(self.original_img.width, x_offset + 64)
-        y1 = min(self.original_img.height, y_offset + 64)
+        return self.original_img.crop(rectangle_coords)
 
-        self.cropped_img = self.original_img.crop((x0, y0, x1, y1))
+    def original_img_click_event(self, event: tk.Event):
+        self.cropped_img = self.crop_original_img(event.x, event.y)
+        if not self.cropped_img: return
+        cropped_image_path = self.get_cropped_image_path()
         self.cropped_img.save(cropped_image_path)
 
-        self.load_cropped_image(
-            cropped_image_path,
-            self.cropped_img_label,
-            self.cropped_img_label_text
-        )
+        self.load_cropped_image(cropped_image_path)
 
     def open_image_file(self, initialdir: str = "imagens"):
+        supported_formats = ["png", "tiff", "dcm"]
         image_path = filedialog.askopenfilename(
             initialdir=initialdir,
-            title="Escolha uma imagem",
+            title="Choose an imagem",
             filetypes=(
-                ("png files", "*.png"),
-                ("tiff files", "*.tiff"),
-                ("dicom files", "*.dcm"),
+                ("all files", "*.*"),
+                # ("png files", "*.png"),
+                # ("tiff files", "*.tiff"),
+                # ("dicom files", "*.dcm"),
             )
         )
-        if (len(image_path) == 0): return
+        if not image_path or len(image_path) == 0: return
+        name, extension = os.path.splitext(os.path.basename(image_path))
+        if extension not in supported_formats: return
         self.load_original_image(image_path)
 
     def set_used_descriptors(self):
@@ -227,7 +236,14 @@ class MyWindow:
         )
 
         self.images_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="Imagens", menu=self.images_menu)
+        self.main_menu.add_cascade(label="Images", menu=self.images_menu)
+
+        for birads_class in self.BIRADS_CLASSES:
+            self.images_menu.add_command(
+                label=birads_class,
+                command=lambda: self.open_image_file(
+                    os.path.join("imagens", birads_class))
+            )
 
 
 MyWindow()
