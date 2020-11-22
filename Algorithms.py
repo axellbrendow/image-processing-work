@@ -210,6 +210,41 @@ class Algorithms:
             predictions
         ).numpy()
 
+    @staticmethod
+    def plot_confusion_matrix(
+        confusion_matrix: np.ndarray,
+        classes,
+        normalize=False,
+        title='Confusion matrix',
+        color_map=plt.cm.Blues
+    ):
+        plt.imshow(confusion_matrix, interpolation='nearest', cmap=color_map)
+        plt.title(title)
+        plt.colorbar()
+        tick_marks = np.arange(len(classes))
+        plt.xticks(tick_marks, classes, rotation=45)
+        plt.yticks(tick_marks, classes)
+
+        if normalize:
+            confusion_matrix = (
+                confusion_matrix.astype('float') /
+                confusion_matrix.sum(axis=1)[:, np.newaxis]
+            )
+
+        thresh = confusion_matrix.max() / 2.
+        for i, j in itertools.product(
+            range(confusion_matrix.shape[0]),
+            range(confusion_matrix.shape[1]
+        )):
+            plt.text(j, i, confusion_matrix[i, j],
+                horizontalalignment="center",
+                color="white" if confusion_matrix[i, j] > thresh else "black")
+
+        plt.tight_layout()
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
+        plt.show()
+
     def train(self):
         self.create_and_compile_model()
         self.get_training_and_test_set()
@@ -231,6 +266,7 @@ class Algorithms:
         print('Test accuracy:', test_acc)
 
         confusion_matrix = self.get_confusion_matrix()
+        self.plot_confusion_matrix(confusion_matrix, self.BIRADS_CLASSES)
     @staticmethod
     def load_images_from_dir(dirname: str):
         images: List[Image.Image] = []
