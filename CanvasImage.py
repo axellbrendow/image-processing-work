@@ -226,18 +226,56 @@ class CanvasImage:
         else:
             return True  # point (x,y) is outside the image area
 
-    def __draw_rectangle(self, event: tk.Event):
-        x = self.canvas.canvasx(event.x)  # get coordinates of the event on the canvas
-        y = self.canvas.canvasy(event.y)
+    def get_drawing_rectangle_x_coords(self, click_x_on_canvas, image_box):
+        # offset from x of the upper left image corner inside canvas
+        x_offset = click_x_on_canvas - image_box[0]
+        
+        rec_x0 = x_offset - 64  # x of the upper left rectangle corner on the image
+        rec_x1 = x_offset + 64  # x of the bottom right rectangle corner on the image
 
+        if rec_x0 < 0:  # checks if the rectangle is coming out on the left
+            offset = -rec_x0
+            rec_x0 += offset
+            rec_x1 += offset
+        elif rec_x1 > self.__image.width:  # checks if the rectangle is coming out on the right
+            offset = rec_x1 - self.__image.width
+            rec_x0 -= offset
+            rec_x1 -= offset
+
+        return (rec_x0, rec_x1)
+
+    def get_drawing_rectangle_y_coords(self, click_y_on_canvas, image_box):
+        # offset from y of the upper left image corner inside canvas
+        y_offset = click_y_on_canvas - image_box[1]
+
+        rec_y0 = y_offset - 64  # y of the upper left rectangle corner on the image
+        rec_y1 = y_offset + 64  # y of the bottom right rectangle corner on the image
+
+        if rec_y0 < 0:  # checks if the rectangle is coming out over the top
+            offset = -rec_y0
+            rec_y0 += offset
+            rec_y1 += offset
+        elif rec_y1 > self.__image.width:  # checks if the rectangle is coming out over the bottom
+            offset = rec_y1 - self.__image.width
+            rec_y0 -= offset
+            rec_y1 -= offset
+
+        return (rec_y0, rec_y1)
+
+    def get_drawing_rectangle_coords(self, mouse_x, mouse_y):
+        x = self.canvas.canvasx(mouse_x)  # get coordinates of the mouse on the canvas
+        y = self.canvas.canvasy(mouse_y)
+        image_box = self.canvas.coords(self.container)
+        rec_x0, rec_x1 = self.get_drawing_rectangle_x_coords(x, image_box)
+        rec_y0, rec_y1 = self.get_drawing_rectangle_y_coords(y, image_box)
+        return (rec_x0, rec_y0, rec_x1, rec_y1)
+
+    def __draw_rectangle(self, event: tk.Event):
         if self.__crop_rectangle:
             self.canvas.delete(self.__crop_rectangle)
 
         self.__crop_rectangle = self.canvas.create_rectangle(
-            x - 63,
-            y - 63,
-            x + 64,
-            y + 64,
+            *self.get_drawing_rectangle_coords(event.x, event.y),
             outline='green'
         )
 
