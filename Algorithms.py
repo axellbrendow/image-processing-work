@@ -110,6 +110,38 @@ class Algorithms:
 
         return (training_set, testing_set)
 
+    def get_training_and_test_set(self):
+        self.images_training_set: np.ndarray = np.empty(
+            shape=(0, len(self.indexes_of_the_used_descriptors)),
+            dtype=np.float64
+        )
+        self.images_training_labels_set = []
+
+        self.images_testing_set: np.ndarray = np.empty(
+            shape=(0, len(self.indexes_of_the_used_descriptors)),
+            dtype=np.float64
+        )
+        self.images_testing_labels_set = []
+
+        for birads_class in self.BIRADS_CLASSES:
+            training_set, testing_set = self.get_training_and_test_set_for_birads_class(
+                birads_class)
+
+            self.images_training_set = np.append(self.images_training_set, training_set, axis=0)
+            training_labels = [int(birads_class) - 1] * len(training_set)
+            self.images_training_labels_set.extend(training_labels)
+
+            self.images_testing_set = np.append(self.images_testing_set, testing_set, axis=0)
+            testing_labels = [int(birads_class) - 1] * len(testing_set)
+            self.images_testing_labels_set.extend(testing_labels)
+
+        self.images_testing_labels_set: np.ndarray = np.array(
+            self.images_testing_labels_set
+        )
+        self.images_training_labels_set: np.ndarray = np.array(
+            self.images_training_labels_set
+        )
+
     def set_used_descriptors(
         self,
         energyCheck: bool,
