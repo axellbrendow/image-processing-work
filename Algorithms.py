@@ -85,6 +85,31 @@ class Algorithms:
     def resample_image(image):
         return np.round(np.array(image) / 8).astype(np.uint8)
 
+    def get_training_and_test_set_for_birads_class(self, birads_class):
+        images = self.images[birads_class]
+        testing_set_size = int(len(images) / 4)
+
+        training_set: np.ndarray = np.empty(
+            shape=(len(images), len(self.indexes_of_the_used_descriptors)),
+            dtype=np.float64
+        )
+
+        for i in range(len(images)):
+            image = self.resample_image(images[i])
+            training_set[i] = self.get_image_descriptors(image)
+
+        testing_set: np.ndarray = np.empty(
+            shape=(testing_set_size, len(self.indexes_of_the_used_descriptors)),
+            dtype=np.float64
+        )
+
+        for i in range(testing_set_size):
+            random_index = random.randint(0, len(training_set) - 1)
+            testing_set[i] = training_set[random_index]
+            training_set = np.delete(training_set, random_index, axis=0)
+
+        return (training_set, testing_set)
+
     def set_used_descriptors(
         self,
         energyCheck: bool,
