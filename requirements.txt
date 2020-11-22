@@ -1,5 +1,9 @@
 autopep8==1.5.4
-Pillow==7.2.0
+mahotas==1.4.11
+matplotlib==3.3.3
+numpy==1.19.2
 pycodestyle==2.6.0
-toml==0.10.1
+pydicom==2.0.0
 opencv-python==4.4.0.44
+Pillow==7.2.0
+tensorflow==2.3.1
