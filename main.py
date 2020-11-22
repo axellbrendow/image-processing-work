@@ -8,12 +8,19 @@ from tkinter import messagebox
 from PIL import ImageTk, Image
 
 from CanvasImage import CanvasImage
+from Algorithms import Algorithms
 
 class MyWindow:
     def __init__(self) -> None:
         self.root = tk.Tk()
-        self.root.title("Image Viewer")
+        self.root.title("Image Classifier")
         self.root.geometry("1024x650")
+
+        self.algorithms = Algorithms()
+        self.algorithms.load_images(show_msg_box=False)
+        # self.algorithms.train()
+        self.original_img = self.algorithms.images["1"][0]
+        self.cropped_img = self.algorithms.images["1"][0]
 
         self.config_menu()
         self.load_images()
@@ -151,10 +158,10 @@ class MyWindow:
         self.file_menu.add_command(label="Exit", command=self.root.quit)
 
         self.options_menu = tk.Menu(self.main_menu)
-        self.main_menu.add_cascade(label="Opções", menu=self.options_menu)
+        self.main_menu.add_cascade(label="Options", menu=self.options_menu)
         self.options_menu.add_command(
-            label="ler o diretório de imagens de treino/teste",
-            command=self.load_images
+            label="Read train/test images directory",
+            command=self.algorithms.load_images
         )
         self.options_menu.add_command(
             label="selecionar as características a serem usadas",
