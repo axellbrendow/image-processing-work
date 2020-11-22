@@ -201,6 +201,15 @@ class Algorithms:
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()]
         )
 
+    def get_confusion_matrix(self) -> np.ndarray:
+        predictions = self.model.predict(self.images_testing_set)
+        predictions = np.argmax(predictions, axis=1)
+
+        return tf.math.confusion_matrix(
+            self.images_testing_labels_set,
+            predictions
+        ).numpy()
+
     def train(self):
         self.create_and_compile_model()
         self.get_training_and_test_set()
@@ -220,6 +229,8 @@ class Algorithms:
         end = time.time()
 
         print('Test accuracy:', test_acc)
+
+        confusion_matrix = self.get_confusion_matrix()
     @staticmethod
     def load_images_from_dir(dirname: str):
         images: List[Image.Image] = []
