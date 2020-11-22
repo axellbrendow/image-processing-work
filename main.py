@@ -223,8 +223,8 @@ class MyWindow:
             command=self.open_select_characteristics_window
         )
         self.options_menu.add_command(
-            label="treinar o classificador",
-            command=lambda: None
+            label="Train classifier",
+            command=self.algorithms.train
         )
         self.options_menu.add_command(
             label="Calculate and show the characteristics for the selected region",

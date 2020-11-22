@@ -245,6 +245,27 @@ class Algorithms:
         plt.xlabel('Predicted label')
         plt.show()
 
+    @staticmethod
+    def show_metrics(confusion_matrix: np.ndarray, executionTime: float):
+        FP = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)  
+        FN = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
+        TP = np.diag(confusion_matrix)
+        TN = confusion_matrix.sum() - (FP + FN + TP)
+        TPR = TP / (TP + FN)  # Sensitivity, hit rate, recall, or true positive rate
+        TNR = TN / (TN + FP)  # Specificity or true negative rate
+        ACC = (TP + TN) / (TP + FP + FN + TN)  # Overall accuracy
+        messagebox.showinfo('Metrics', f'''Execution time: {round(executionTime, 3)} sec
+
+Accuracy:
+{[round(x, 2) for x in ACC]} -> {round(ACC.mean(), 2)}
+
+Sensibility:
+{[round(x, 2) for x in TPR]} -> {round(TPR.mean(), 2)}
+
+Specificity:
+{[round(x, 2) for x in TNR]} -> {round(TNR.mean(), 2)}
+''')
+
     def train(self):
         self.create_and_compile_model()
         self.get_training_and_test_set()
@@ -267,6 +288,8 @@ class Algorithms:
 
         confusion_matrix = self.get_confusion_matrix()
         self.plot_confusion_matrix(confusion_matrix, self.BIRADS_CLASSES)
+        self.show_metrics(confusion_matrix, end - start)
+
     @staticmethod
     def load_images_from_dir(dirname: str):
         images: List[Image.Image] = []
