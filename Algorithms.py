@@ -184,6 +184,23 @@ class Algorithms:
                 list(range(len(descriptors_flags), len(descriptors_flags) + 7))
             )
 
+    def create_and_compile_model(self):
+        input_shape = (len(self.indexes_of_the_used_descriptors),)
+
+        self.model = tf.keras.Sequential([
+            tf.keras.layers.Flatten(input_shape=input_shape),
+            tf.keras.layers.Dense(128, activation=tf.nn.relu),
+            # tf.keras.layers.Dense(256, activation=tf.nn.sigmoid),
+            # tf.keras.layers.Dense(1024, activation=tf.nn.softmax),
+            tf.keras.layers.Dense(4, activation=tf.nn.softmax),
+        ])
+
+        self.model.compile(
+            optimizer=tf.keras.optimizers.Adam(),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+            metrics=[tf.keras.metrics.SparseCategoricalAccuracy()]
+        )
+
     @staticmethod
     def load_images_from_dir(dirname: str):
         images: List[Image.Image] = []
