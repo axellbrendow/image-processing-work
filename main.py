@@ -1,5 +1,6 @@
 import os
 import time
+import cv2
 
 import tkinter as tk
 from tkinter import filedialog
@@ -7,7 +8,7 @@ from tkinter import messagebox
 
 from PIL import ImageTk, Image
 
-# import pydicom
+import pydicom
 
 from SelectCharacteristics import SelectCharacteristics
 from ShowCharacteristics import ShowCharacteristics
@@ -66,12 +67,14 @@ class MyWindow:
         self,
         image_path: str
     ):
-        # if image_path[-4:] == '.dcm':
-        #     self.original_img = pydicom.dcmread(image_path).pixel_array*128
-        # else:
+        if image_path.lower()[-4:] == '.dcm':
+            file_data_set = pydicom.read_file(image_path)
+            image = file_data_set.pixel_array
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Comment to let image with colors
+            image_path = f'{image_path[:-4]}.png'
+            cv2.imwrite(image_path, image)
 
         self.original_img = Image.open(image_path)
-
         self.canvasimage = CanvasImage(self.root, image_path)  # create widget
         self.canvasimage.bind("<Button-1>", self.original_img_click_event)
         self.canvasimage.grid(row=2, column=1)  # show widget
@@ -114,7 +117,7 @@ class MyWindow:
         self.load_cropped_image(cropped_image_path)
 
     def open_image_file(self, initialdir: str = "imagens"):
-        supported_formats = ["png", "tiff", "dcm"]
+        supported_formats = [".png", ".tiff", ".dcm"]
         image_path = filedialog.askopenfilename(
             initialdir=initialdir,
             title="Choose an imagem",
@@ -127,6 +130,7 @@ class MyWindow:
         )
         if not image_path or len(image_path) == 0: return
         name, extension = os.path.splitext(os.path.basename(image_path))
+        extension = extension.lower()
         if extension not in supported_formats: return
         self.load_original_image(image_path)
 
