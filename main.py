@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict
+import time
 
 import tkinter as tk
 from tkinter import filedialog
@@ -7,7 +7,10 @@ from tkinter import messagebox
 
 from PIL import ImageTk, Image
 
+# import pydicom
+
 from SelectCharacteristics import SelectCharacteristics
+from ShowCharacteristics import ShowCharacteristics
 from CanvasImage import CanvasImage
 from Algorithms import Algorithms
 
@@ -147,10 +150,37 @@ class MyWindow:
             self.set_used_descriptors
         )
 
-    def load_images(self):
-        if not os.path.exists('imagens'):
-            messagebox.showinfo('Erro', 'A pasta imagens não foi encontrada')
-            exit(0)
+    def open_show_characteristics_window(self):
+        start = time.time()
+        descriptors = self.algorithms.get_all_image_descriptors(
+            self.algorithms.resample_image(self.cropped_img)
+        )
+        ShowCharacteristics(
+            self.root,
+            time.time() - start,
+            descriptors[0],
+            descriptors[1],
+            descriptors[2],
+            descriptors[3],
+            descriptors[4],
+            descriptors[5],
+            descriptors[6],
+            descriptors[7],
+            descriptors[8],
+            descriptors[9],
+            descriptors[10],
+            descriptors[11],
+            descriptors[12],
+            [
+                descriptors[13],
+                descriptors[14],
+                descriptors[15],
+                descriptors[16],
+                descriptors[17],
+                descriptors[18],
+                descriptors[19],
+            ]
+        )
 
         self.images: Dict[str, List[Image.Image]] = {
             "1": [],
@@ -188,8 +218,8 @@ class MyWindow:
             command=lambda: None
         )
         self.options_menu.add_command(
-            label="calcular e exibir as características para a imagem visualizada ou área selecionada",
-            command=lambda: None
+            label="Calculate and show the characteristics for the selected region",
+            command=self.open_show_characteristics_window
         )
         self.options_menu.add_command(
             label="classificar a imagem ou a região de interesse selecionada com o mouse",
