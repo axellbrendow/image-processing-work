@@ -76,6 +76,10 @@ class Algorithms:
 
         return descriptors
 
+    def get_image_descriptors(self, image):
+        descriptors = self.get_all_image_descriptors(image)
+
+        return np.array([descriptors[i] for i in self.indexes_of_the_used_descriptors])
 
     @staticmethod
     def resample_image(image):
