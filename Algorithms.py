@@ -201,6 +201,25 @@ class Algorithms:
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()]
         )
 
+    def train(self):
+        self.create_and_compile_model()
+        self.get_training_and_test_set()
+
+        start = time.time()
+        self.model.fit(
+            self.images_training_set,
+            self.images_training_labels_set,
+            epochs=10
+        )
+
+        test_loss, test_acc = self.model.evaluate(
+            self.images_testing_set,
+            self.images_testing_labels_set,
+            verbose=2
+        )
+        end = time.time()
+
+        print('Test accuracy:', test_acc)
     @staticmethod
     def load_images_from_dir(dirname: str):
         images: List[Image.Image] = []
