@@ -290,6 +290,13 @@ Specificity:
         self.plot_confusion_matrix(confusion_matrix, self.BIRADS_CLASSES)
         self.show_metrics(confusion_matrix, end - start)
 
+    def predict(self, image):
+        predictions = self.model.predict(np.array([
+            self.get_image_descriptors(image)
+        ]))
+
+        return np.argmax(predictions[0])
+
     @staticmethod
     def load_images_from_dir(dirname: str):
         images: List[Image.Image] = []

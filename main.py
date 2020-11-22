@@ -191,16 +191,14 @@ class MyWindow:
             ]
         )
 
-        self.images: Dict[str, List[Image.Image]] = {
-            "1": [],
-            "2": [],
-            "3": [],
-            "4": []
-        }
-        self.load_images_from_dir("1")
-        self.load_images_from_dir("2")
-        self.load_images_from_dir("3")
-        self.load_images_from_dir("4")
+    def classify_cropped_img(self):
+        birads_class = 1 + self.algorithms.predict(
+            self.algorithms.resample_image(self.cropped_img)
+        )
+        messagebox.showinfo(
+            'Image classification',
+            f'Classified as BIRADS {birads_class}'
+        )
 
     def config_menu(self):
         self.main_menu = tk.Menu(self.root)
@@ -231,8 +229,8 @@ class MyWindow:
             command=self.open_show_characteristics_window
         )
         self.options_menu.add_command(
-            label="classificar a imagem ou a região de interesse selecionada com o mouse",
-            command=lambda: None
+            label="Classify the selected region",
+            command=self.classify_cropped_img
         )
 
         self.images_menu = tk.Menu(self.main_menu)
