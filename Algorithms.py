@@ -22,6 +22,49 @@ class Algorithms:
     def __init__(self) -> None:
         self.images: Dict[str, List[Image.Image]] = {}
 
+
+    def set_used_descriptors(
+        self,
+        energyCheck: bool,
+        contrastCheck: bool,
+        correlationCheck: bool,
+        varianceCheck: bool,
+        homogeneityCheck: bool,
+        sumAverageCheck: bool,
+        sumVarianceCheck: bool,
+        sumEntropyCheck: bool,
+        entropyCheck: bool,
+        differenceVarianceCheck: bool,
+        differenceEntropyCheck: bool,
+        informationMeasuresOfCorrelation12Check: bool,
+        informationMeasuresOfCorrelation13Check: bool,
+        sevenInvariantHuMomentsCheck: bool
+    ):
+        descriptors_flags = [
+            energyCheck,
+            contrastCheck,
+            correlationCheck,
+            varianceCheck,
+            homogeneityCheck,
+            sumAverageCheck,
+            sumVarianceCheck,
+            sumEntropyCheck,
+            entropyCheck,
+            differenceVarianceCheck,
+            differenceEntropyCheck,
+            informationMeasuresOfCorrelation12Check,
+            informationMeasuresOfCorrelation13Check
+        ]
+
+        self.indexes_of_the_used_descriptors = [
+            i for i in range(len(descriptors_flags)) if descriptors_flags[i]
+        ]
+
+        if sevenInvariantHuMomentsCheck:
+            self.indexes_of_the_used_descriptors.extend(
+                list(range(len(descriptors_flags), len(descriptors_flags) + 7))
+            )
+
     @staticmethod
     def load_images_from_dir(dirname: str):
         images: List[Image.Image] = []

@@ -7,6 +7,7 @@ from tkinter import messagebox
 
 from PIL import ImageTk, Image
 
+from SelectCharacteristics import SelectCharacteristics
 from CanvasImage import CanvasImage
 from Algorithms import Algorithms
 
@@ -117,19 +118,34 @@ class MyWindow:
         if (len(image_path) == 0): return
         self.load_original_image(image_path)
 
-    def load_images_from_dir(self, dirname: str):
-        self.images_menu.delete(dirname) # deleta o menu caso exista
-        self.images_menu.add_command(
-            label=dirname,
-            command=lambda: self.open_image_file(os.path.join("imagens", dirname))
+    def set_used_descriptors(self):
+        window = self.select_characteristics_window
+        self.algorithms.set_used_descriptors(
+            window.energyCheckVar.get() == 1,
+            window.contrastVar.get() == 1,
+            window.correlationVar.get() == 1,
+            window.varianceVar.get() == 1,
+            window.homogeneityVar.get() == 1,
+            window.sumAverageVar.get() == 1,
+            window.sumVarianceVar.get() == 1,
+            window.sumEntropyVar.get() == 1,
+            window.entropyVar.get() == 1,
+            window.differenceVarianceVar.get() == 1,
+            window.differenceEntropyVar.get() == 1,
+            window.informationMeasuresOfCorrelation12Var.get() == 1,
+            window.informationMeasuresOfCorrelation13Var.get() == 1,
+            window.sevenInvariantHuMomentsVar.get() == 1,
         )
-        
-        # percorre os arquivos e diretórios que existirem dentro de imagens/1 por exemplo
-        for caminho_diretorio, diretorios, arquivos in os.walk(os.path.join("imagens", dirname)):
-            for arquivo in arquivos:
-                if ".png" in arquivo:
-                    caminho_completo = os.path.join(caminho_diretorio, arquivo)
-                    self.images[dirname].append(Image.open(caminho_completo))
+        window.root.destroy()
+        window.root.update()
+
+    def open_select_characteristics_window(self):
+        new_window = SelectCharacteristics(self.root)
+        self.select_characteristics_window = new_window
+        self.select_characteristics_window.root.protocol(
+            "WM_DELETE_WINDOW",
+            self.set_used_descriptors
+        )
 
     def load_images(self):
         if not os.path.exists('imagens'):
@@ -164,8 +180,8 @@ class MyWindow:
             command=self.algorithms.load_images
         )
         self.options_menu.add_command(
-            label="selecionar as características a serem usadas",
-            command=lambda: None
+            label="Select the characteristics to use",
+            command=self.open_select_characteristics_window
         )
         self.options_menu.add_command(
             label="treinar o classificador",
