@@ -24,6 +24,8 @@ python3 main.py
 
 ## Referências
 
+- https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse/48069295#48069295
+- https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257
 - https://ieeexplore.ieee.org/document/4309314
 - https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python
 - https://www.pyimagesearch.com/2014/10/27/opencv-shape-descriptor-hu-moments-example/
