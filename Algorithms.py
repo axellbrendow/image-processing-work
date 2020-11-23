@@ -254,9 +254,12 @@ class Algorithms:
         TPR = TP / (TP + FN)  # Sensitivity, hit rate, recall, or true positive rate
         TNR = TN / (TN + FP)  # Specificity or true negative rate
         ACC = (TP + TN) / (TP + FP + FN + TN)  # Overall accuracy
+        accuracy = TP.sum() / confusion_matrix.sum()
         messagebox.showinfo('Metrics', f'''Execution time: {round(executionTime, 3)} sec
 
-Accuracy:
+Accuracy: {round(accuracy, 2)}
+
+Overall Accuracy:
 {[round(x, 2) for x in ACC]} -> {round(ACC.mean(), 2)}
 
 Sensibility:

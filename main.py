@@ -12,7 +12,7 @@ import pydicom
 
 from SelectCharacteristics import SelectCharacteristics
 from ShowCharacteristics import ShowCharacteristics
-from CanvasImage import CanvasImage
+from ZoomableImage import ZoomableImage
 from Algorithms import Algorithms
 
 class MyWindow:
@@ -42,7 +42,7 @@ class MyWindow:
         self.root.rowconfigure(2, weight=1)  # make the CanvasImage widget expandable
         self.root.columnconfigure(1, weight=1)
 
-        self.canvasimage = CanvasImage(self.root, self.original_img.filename)  # create widget
+        self.canvasimage = ZoomableImage(self.root, self.original_img.filename)
         self.canvasimage.bind("<Button-1>", self.original_img_click_event)
         self.canvasimage.grid(row=2, column=1)  # show widget
 
@@ -75,9 +75,7 @@ class MyWindow:
             cv2.imwrite(image_path, image)
 
         self.original_img = Image.open(image_path)
-        self.canvasimage = CanvasImage(self.root, image_path)  # create widget
-        self.canvasimage.bind("<Button-1>", self.original_img_click_event)
-        self.canvasimage.grid(row=2, column=1)  # show widget
+        self.canvasimage.set_image(self.original_img)
 
         self.original_img_label_text.configure(text=os.path.basename(image_path))
 
@@ -104,7 +102,7 @@ class MyWindow:
 
         if self.canvasimage.outside(x, y): return
 
-        rectangle_coords = self.canvasimage.get_drawing_rectangle_coords(click_x, click_y)
+        rectangle_coords = self.canvasimage.get_cropping_rectangle_coords(click_x, click_y)
 
         return self.original_img.crop(rectangle_coords)
 
