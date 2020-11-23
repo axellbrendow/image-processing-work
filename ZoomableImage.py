@@ -92,7 +92,7 @@ class ZoomableImage:
     def get_drawing_rectangle_x_coords(self, click_x_on_canvas, image_box):
         # offset from x of the upper left image corner inside canvas
         x_offset = click_x_on_canvas - image_box[0]
-        
+
         # x of the upper left rectangle corner on the image
         rec_x0 = math.floor(x_offset - (64 * self.imscale))
         # x of the bottom right rectangle corner on the image
