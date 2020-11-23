@@ -13017,6 +13017,45 @@ ul.typeahead-list  > li > a.pull-right {
 .highlight .vm { color: #19177C } /* Name.Variable.Magic */
 .highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
     </style>
+<style type="text/css">
+    
+/* Temporary definitions which will become obsolete with Notebook release 5.0 */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+
+    </style>
 
 
 <style type="text/css">
@@ -13080,8 +13119,6 @@ div#notebook {
 <h2 id="Reconhecimento-de-padr&#245;es-por-textura-em-imagens-mamogr&#225;ficas">Reconhecimento de padr&#245;es por textura em imagens mamogr&#225;ficas<a class="anchor-link" href="#Reconhecimento-de-padr&#245;es-por-textura-em-imagens-mamogr&#225;ficas">&#182;</a></h2><p>Pontificia Universidade Catolica de Minas Gerais</p>
 <p>Axell Brendow</p>
 <p>Raiana Pereira</p>
-<p>Codigo disponivel em:
-<a href="https://github.com/axell-brendow/image-processing-work.git">https://github.com/axell-brendow/image-processing-work.git</a></p>
 
 </div>
 </div>
@@ -13107,10 +13144,10 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Descri&#231;&#227;o-das-t&#233;cnicas-implementadas-para-a-solu&#231;&#227;o,-principalmente-do-classificador">Descri&#231;&#227;o das t&#233;cnicas implementadas para a solu&#231;&#227;o, principalmente do classificador<a class="anchor-link" href="#Descri&#231;&#227;o-das-t&#233;cnicas-implementadas-para-a-solu&#231;&#227;o,-principalmente-do-classificador">&#182;</a></h3><p>O classificador escolhido para o trabalho é uma rede neural completamente conectada.</p>
-<p>A primeira camada da rede neural tem 128 neurônios e usa a função de ativação retificadora (<a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks">https://en.wikipedia.org/wiki/Rectifier_(neural_networks</a>)).</p>
+<p>A primeira camada da rede neural tem 128 neurônios e usa a função de ativação <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks">retificadora</a>).</p>
 <p>A segunda e última camada da rede neural tem 4 neurônios que correspondem às 4 classes BIRADS.</p>
 <p>O otimizador da rede neural usa o algoritmo de Adam e a métrica extraída é a acurácia.</p>
-<p>As imagens podem ser descritas por todos os 13 primeiros descritores do artigo "Textural Features for Image Classification" mais os 7 momentos invariantes de Hu:</p>
+<p>As imagens podem ser descritas por todos os 13 primeiros descritores do artigo "<a href="https://ieeexplore.ieee.org/document/4309314">Textural Features for Image Classification</a>" mais os 7 momentos invariantes de Hu:</p>
 <ul>
 <li>Energia</li>
 <li>Contraste</li>
@@ -13127,7 +13164,8 @@ div#notebook {
 <li>Medida de informação de correlação 13</li>
 <li>Todos os 7 momentos invariantes de Hu</li>
 </ul>
-<p>No treinamento, a rede neural recebe um vetor onde cada posição contém o vetor de descritores de uma imagem e consequentemente o classificador também recebe um vetor com as classes esperadas para aquele vetor de descritores. No teste, o funcionamento é igual porém são passados menos dados para avaliação.</p>
+<p>Formato dos dados de treinamento e teste:</p>
+<p>A rede neural recebe um vetor D (descritores) onde D[i] contém o arranjo de descritores de uma imagem e um vetor C (classes) contém C[i] traz a classe esperada para essa imagem.</p>
 
 </div>
 </div>
@@ -13147,14 +13185,13 @@ div#notebook {
 <li>Pillow==7.2.0</li>
 <li>tensorflow==2.3.1</li>
 </ul>
-<p>Para instalar , compilar e executar as bibliotecas é necessário que a versão do python seja menor ou igual a 3.8.</p>
-<p>Abra a pasta onde está o projeto como tambem o arquivo main.py e execute as seguintes instruções no terminal:</p>
-<ul>
-<li>python3 -m pip install --upgrade pip</li>
-<li>python3 -m pip install -r requirements.txt</li>
-<li>python3 main.py</li>
-</ul>
-<p>Ao executar o arquivo <strong>requirements.txt</strong> será feita a instalação de todas as bilbiotecas usadas no projeto.</p>
+<p>Para instalar as bibliotecas e executar o projeto usamos versões do Python entre 3.6.9 e 3.8.</p>
+<p>Abra a pasta do projeto no terminal e execute (troque python3 por python no Windows):</p>
+
+<pre><code>python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
+python3 main.py</code></pre>
+<p>Esses comandos irão instalar as dependências do projeto e rodar o arquivo principal.</p>
 
 </div>
 </div>
@@ -13162,7 +13199,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Medidas--de--tempo--de--execu&#231;&#227;o--para--diversas--imagens,--descritores--e--hiperpar&#226;metros--do-classificador">Medidas  de  tempo  de  execu&#231;&#227;o  para  diversas  imagens,  descritores  e  hiperpar&#226;metros  do classificador<a class="anchor-link" href="#Medidas--de--tempo--de--execu&#231;&#227;o--para--diversas--imagens,--descritores--e--hiperpar&#226;metros--do-classificador">&#182;</a></h3><p>Ao treinar as imagens do diretorio 4 obteu-se as seguintes metricas:</p>
+<h3 id="Medidas--de--tempo--de--execu&#231;&#227;o--para--diversas--imagens,--descritores--e--hiperpar&#226;metros--do-classificador">Medidas  de  tempo  de  execu&#231;&#227;o  para  diversas  imagens,  descritores  e  hiperpar&#226;metros  do classificador<a class="anchor-link" href="#Medidas--de--tempo--de--execu&#231;&#227;o--para--diversas--imagens,--descritores--e--hiperpar&#226;metros--do-classificador">&#182;</a></h3><p>Ao treinar o classificador com o conjunto de imagens de teste obteu-se as seguintes métricas:</p>
 <p><img src="https://github.com/axell-brendow/image-processing-work/blob/main/assets/metrics.PNG?raw=true" alt=""></p>
 <p>Matriz de confusão gerada:</p>
 <p><img src="https://github.com/axell-brendow/image-processing-work/blob/main/assets/image1.png?raw=true" alt=""></p>
@@ -13173,16 +13210,16 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Refer&#234;ncias-Bibliograficas">Refer&#234;ncias Bibliograficas<a class="anchor-link" href="#Refer&#234;ncias-Bibliograficas">&#182;</a></h2><p><strong>Move and zoom a tkinter canvas with mouse</strong>. stackoverflow, 2020. Disponível em: <a href="https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse/48069295#48069295">https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse/48069295#48069295</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Tkinter canvas zoom move pan</strong>. stackoverflow, 2020. Disponível em: - <a href="https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257">https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Textural Features for Image Classification</strong>. ieeexplore, 2020. Disponível em: - <a href="https://ieeexplore.ieee.org/document/4309314">https://ieeexplore.ieee.org/document/4309314</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>How-can-i-convert-an-rgb-image-into-grayscale-in-python</strong>. stackoverflow, 2020. Disponível em: - - <a href="https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python">https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Opencv-shape-descriptor-hu-moments-example</strong>. pyimagesearch, 2020. Disponível em: - <a href="https://www.pyimagesearch.com/2014/10/27/opencv-shape-descriptor-hu-moments-example/">https://www.pyimagesearch.com/2014/10/27/opencv-shape-descriptor-hu-moments-example/</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Texture Recognition using Haralick Texture and Python</strong>. gogul, 2020. Disponível em: - <a href="https://gogul.dev/software/texture-recognition">https://gogul.dev/software/texture-recognition</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Tensorflow Image Classification | Build Your Own Image Classifier In Tensorflow | Edureka</strong>. youtube, 2020. Disponível em: - <a href="https://www.youtube.com/watch?v=AACPaoDsd50&amp;ab_channel=edureka%21">https://www.youtube.com/watch?v=AACPaoDsd50&amp;ab_channel=edureka%21</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Treine sua primeira rede neural: classificação básica</strong>. tensorflow, 2020. Disponível em: - <a href="https://www.tensorflow.org/tutorials/keras/classification?hl=pt-br#fa%C3%A7a_predi%C3%A7%C3%B5es">https://www.tensorflow.org/tutorials/keras/classification?hl=pt-br#fa%C3%A7a_predi%C3%A7%C3%B5es</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Confusion Matrix for Your Multi-Class Machine Learning Model</strong>. towardsdatascience, 2020. Disponível em: - <a href="https://towardsdatascience.com/confusion-matrix-for-your-multi-class-machine-learning-model-ff9aa3bf7826">https://towardsdatascience.com/confusion-matrix-for-your-multi-class-machine-learning-model-ff9aa3bf7826</a>. Acesso em: 20, Novembro de 2020.</p>
-<p><strong>Scikit-learn: How to obtain True Positive, True Negative, False Positive and False Negative</strong>. stackoverflow, 2020. Disponível em: - <a href="https://stackoverflow.com/questions/31324218/scikit-learn-how-to-obtain-true-positive-true-negative-false-positive-and-fal">https://stackoverflow.com/questions/31324218/scikit-learn-how-to-obtain-true-positive-true-negative-false-positive-and-fal</a>. Acesso em: 20, Novembro de 2020.</p>
+<h2 id="Refer&#234;ncias">Refer&#234;ncias<a class="anchor-link" href="#Refer&#234;ncias">&#182;</a></h2><p><strong>Move and zoom a tkinter canvas with mouse</strong>. stackoverflow, 2020. Disponível em: <a href="https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse/48069295#48069295">https://stackoverflow.com/questions/25787523/move-and-zoom-a-tkinter-canvas-with-mouse/48069295#48069295</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Tkinter canvas zoom move pan</strong>. stackoverflow, 2020. Disponível em: <a href="https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257">https://stackoverflow.com/questions/41656176/tkinter-canvas-zoom-move-pan/48137257#48137257</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Textural Features for Image Classification</strong>. ieeexplore, 2020. Disponível em: <a href="https://ieeexplore.ieee.org/document/4309314">https://ieeexplore.ieee.org/document/4309314</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>How-can-i-convert-an-rgb-image-into-grayscale-in-python</strong>. stackoverflow, 2020. Disponível em: <a href="https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python">https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Opencv-shape-descriptor-hu-moments-example</strong>. pyimagesearch, 2020. Disponível em: <a href="https://www.pyimagesearch.com/2014/10/27/opencv-shape-descriptor-hu-moments-example/">https://www.pyimagesearch.com/2014/10/27/opencv-shape-descriptor-hu-moments-example/</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Texture Recognition using Haralick Texture and Python</strong>. gogul, 2020. Disponível em: <a href="https://gogul.dev/software/texture-recognition">https://gogul.dev/software/texture-recognition</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Tensorflow Image Classification | Build Your Own Image Classifier In Tensorflow | Edureka</strong>. youtube, 2020. Disponível em: <a href="https://www.youtube.com/watch?v=AACPaoDsd50&amp;ab_channel=edureka%21">https://www.youtube.com/watch?v=AACPaoDsd50&amp;ab_channel=edureka%21</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Treine sua primeira rede neural: classificação básica</strong>. tensorflow, 2020. Disponível em: <a href="https://www.tensorflow.org/tutorials/keras/classification?hl=pt-br#fa%C3%A7a_predi%C3%A7%C3%B5es">https://www.tensorflow.org/tutorials/keras/classification?hl=pt-br#fa%C3%A7a_predi%C3%A7%C3%B5es</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Confusion Matrix for Your Multi-Class Machine Learning Model</strong>. towardsdatascience, 2020. Disponível em: <a href="https://towardsdatascience.com/confusion-matrix-for-your-multi-class-machine-learning-model-ff9aa3bf7826">https://towardsdatascience.com/confusion-matrix-for-your-multi-class-machine-learning-model-ff9aa3bf7826</a>. Acesso em: 20, Novembro de 2020.</p>
+<p><strong>Scikit-learn: How to obtain True Positive, True Negative, False Positive and False Negative</strong>. stackoverflow, 2020. Disponível em: <a href="https://stackoverflow.com/questions/31324218/scikit-learn-how-to-obtain-true-positive-true-negative-false-positive-and-fal">https://stackoverflow.com/questions/31324218/scikit-learn-how-to-obtain-true-positive-true-negative-false-positive-and-fal</a>. Acesso em: 20, Novembro de 2020.</p>
 
 </div>
 </div>
