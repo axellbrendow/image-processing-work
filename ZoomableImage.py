@@ -67,8 +67,8 @@ class ZoomableImage:
         self.canvas.bind(*args)
 
     def grid(self, **kw):
-        """ Put CanvasImage widget on the parent widget """
-        self.__imframe.grid(**kw)  # place CanvasImage widget on the grid
+        """ Put ZoomableImage widget on the parent widget """
+        self.__imframe.grid(**kw)  # place ZoomableImage widget on the grid
         self.__imframe.grid(sticky='nswe')  # make frame container sticky
         self.__imframe.rowconfigure(0, weight=1)  # make canvas expandable
         self.__imframe.columnconfigure(0, weight=1)

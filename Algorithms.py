@@ -6,6 +6,7 @@ import mahotas
 import cv2
 import itertools
 import time
+import csv
 
 from typing import List, Dict
 
@@ -184,12 +185,12 @@ class Algorithms:
                 list(range(len(descriptors_flags), len(descriptors_flags) + 7))
             )
 
-    def create_and_compile_model(self):
+    def create_and_compile_model(self, num_neurons):
         input_shape = (len(self.indexes_of_the_used_descriptors),)
 
         self.model = tf.keras.Sequential([
             tf.keras.layers.Flatten(input_shape=input_shape),
-            tf.keras.layers.Dense(128, activation=tf.nn.relu),
+            tf.keras.layers.Dense(num_neurons, activation=tf.nn.relu),
             # tf.keras.layers.Dense(256, activation=tf.nn.sigmoid),
             # tf.keras.layers.Dense(1024, activation=tf.nn.softmax),
             tf.keras.layers.Dense(4, activation=tf.nn.softmax),
@@ -246,7 +247,7 @@ class Algorithms:
         plt.show()
 
     @staticmethod
-    def show_metrics(confusion_matrix: np.ndarray, executionTime: float):
+    def get_metrics(confusion_matrix: np.ndarray) -> Dict[str, np.ndarray]:
         FP = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)  
         FN = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
         TP = np.diag(confusion_matrix)
@@ -254,44 +255,69 @@ class Algorithms:
         TPR = TP / (TP + FN)  # Sensitivity, hit rate, recall, or true positive rate
         TNR = TN / (TN + FP)  # Specificity or true negative rate
         ACC = (TP + TN) / (TP + FP + FN + TN)  # Overall accuracy
+        sensitivity = round(TPR.mean(), 2)
+        specificity = round(TNR.mean(), 2)
         accuracy = TP.sum() / confusion_matrix.sum()
-        messagebox.showinfo('Metrics', f'''Execution time: {round(executionTime, 3)} sec
 
-Accuracy: {round(accuracy, 2)}
+        return {
+            'FP': FP,
+            'FN': FN,
+            'TP': TP,
+            'TN': TN,
+            'TPR': TPR,
+            'TNR': TNR,
+            'ACC': ACC,
+            'sensitivity': sensitivity,
+            'specificity': specificity,
+            'accuracy': accuracy
+        }
 
-Overall Accuracy:
-{[round(x, 2) for x in ACC]} -> {round(ACC.mean(), 2)}
-
-Sensibility:
-{[round(x, 2) for x in TPR]} -> {round(TPR.mean(), 2)}
-
-Specificity:
-{[round(x, 2) for x in TNR]} -> {round(TNR.mean(), 2)}
-''')
-
-    def train(self):
-        self.create_and_compile_model()
+    def train(self, num_neurons = 32, num_epochs = 1000):
+        self.create_and_compile_model(num_neurons)
         self.get_training_and_test_set()
 
         start = time.time()
         self.model.fit(
             self.images_training_set,
             self.images_training_labels_set,
-            epochs=10
+            epochs=num_epochs
         )
-
-        test_loss, test_acc = self.model.evaluate(
-            self.images_testing_set,
-            self.images_testing_labels_set,
-            verbose=2
-        )
-        end = time.time()
-
-        print('Test accuracy:', test_acc)
+        executionTime = time.time() - start
 
         confusion_matrix = self.get_confusion_matrix()
-        self.plot_confusion_matrix(confusion_matrix, self.BIRADS_CLASSES)
-        self.show_metrics(confusion_matrix, end - start)
+        # self.plot_confusion_matrix(confusion_matrix, self.BIRADS_CLASSES)
+        return executionTime, self.get_metrics(confusion_matrix, confusion_matrix)
+
+    def train_different_number_of_neurons_and_epochs(self):
+        num_neurons_arr = [32, 64, 128, 256, 512, 1024]
+        num_epochs_arr = [100, 500, 1000, 2000, 3000, 4000, 5000]
+        results: List[List[float]] = []
+
+        for num_neurons in num_neurons_arr:
+            for num_epochs in num_epochs_arr:
+                execution_time, metrics = self.train(num_neurons, num_epochs)
+                results.append([
+                    execution_time,
+                    metrics['accuracy'],
+                    metrics['sensitivity'],
+                    metrics['specificity'],
+                    num_neurons,
+                    num_epochs,
+                ])
+
+        with open('train_results.csv', 'w') as results_file:
+            csv_writer = csv.writer(results_file)
+            csv_writer.writerow([
+                'Execution time (sec)',
+                'Accuracy',
+                'Sensitivity',
+                'Specificity',
+                'Num. of neurons',
+                'Num. of epochs',
+            ])
+            csv_writer.writerows(results)
+
+        return results
 
     def predict(self, image):
         predictions = self.model.predict(np.array([

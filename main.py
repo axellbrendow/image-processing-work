@@ -12,6 +12,7 @@ import pydicom
 
 from SelectCharacteristics import SelectCharacteristics
 from ShowCharacteristics import ShowCharacteristics
+from ShowMetrics import ShowMetrics
 from ZoomableImage import ZoomableImage
 from Algorithms import Algorithms
 
@@ -25,7 +26,7 @@ class MyWindow:
 
         self.algorithms = Algorithms()
         self.algorithms.load_images(show_msg_box=False)
-        # self.algorithms.train()
+
         self.original_img = self.algorithms.images["1"][0]
         self.cropped_img = self.algorithms.images["1"][0]
 
@@ -39,12 +40,12 @@ class MyWindow:
         self.original_img_title = tk.Label(text="Original")
         self.original_img_title.grid(row=1, column=1, pady=15)
 
-        self.root.rowconfigure(2, weight=1)  # make the CanvasImage widget expandable
+        self.root.rowconfigure(2, weight=1)  # make the ZoomableImage widget expandable
         self.root.columnconfigure(1, weight=1)
 
-        self.canvasimage = ZoomableImage(self.root, self.original_img.filename)
-        self.canvasimage.bind("<Button-1>", self.original_img_click_event)
-        self.canvasimage.grid(row=2, column=1)  # show widget
+        self.zoomable_img = ZoomableImage(self.root, self.original_img.filename)
+        self.zoomable_img.bind("<Button-1>", self.original_img_click_event)
+        self.zoomable_img.grid(row=2, column=1)  # show widget
 
         self.original_img_label_text = tk.Label(text=self.original_img.filename)
         self.original_img_label_text.grid(row=3, column=1, padx=30)
@@ -75,7 +76,7 @@ class MyWindow:
             cv2.imwrite(image_path, image)
 
         self.original_img = Image.open(image_path)
-        self.canvasimage.set_image(self.original_img)
+        self.zoomable_img.set_image(self.original_img)
 
         self.original_img_label_text.configure(text=os.path.basename(image_path))
 
@@ -97,12 +98,12 @@ class MyWindow:
         )
 
     def crop_original_img(self, click_x, click_y):
-        x = self.canvasimage.canvas.canvasx(click_x)
-        y = self.canvasimage.canvas.canvasy(click_y)
+        x = self.zoomable_img.canvas.canvasx(click_x)
+        y = self.zoomable_img.canvas.canvasy(click_y)
 
-        if self.canvasimage.outside(x, y): return
+        if self.zoomable_img.outside(x, y): return
 
-        rectangle_coords = self.canvasimage.get_cropping_rectangle_coords(click_x, click_y)
+        rectangle_coords = self.zoomable_img.get_cropping_rectangle_coords(click_x, click_y)
 
         return self.original_img.crop(rectangle_coords)
 
@@ -159,6 +160,21 @@ class MyWindow:
         self.select_characteristics_window.root.protocol(
             "WM_DELETE_WINDOW",
             self.set_used_descriptors
+        )
+
+    def train_classifier(self):
+        executionTime, metrics = self.algorithms.train()
+        self.metrics_window = ShowMetrics(
+            self.root,
+            executionTime,
+            metrics['FP'],
+            metrics['FN'],
+            metrics['TP'],
+            metrics['TN'],
+            metrics['TPR'],
+            metrics['TNR'],
+            metrics['ACC'],
+            metrics['accuracy']
         )
 
     def open_show_characteristics_window(self):
@@ -224,7 +240,7 @@ class MyWindow:
         )
         self.options_menu.add_command(
             label="Train classifier",
-            command=self.algorithms.train
+            command=self.train_classifier
         )
         self.options_menu.add_command(
             label="Calculate and show the characteristics for the selected region",
