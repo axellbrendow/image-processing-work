@@ -23,6 +23,8 @@ class Algorithms:
     def __init__(self) -> None:
         self.images: Dict[str, List[Image.Image]] = {}
 
+        self.set_number_of_shades_of_gray(32)
+
         self.set_used_descriptors(
             True, True, True, True, True, True, True,
             True, True, True, True, True, True, True
@@ -82,9 +84,12 @@ class Algorithms:
 
         return np.array([descriptors[i] for i in self.indexes_of_the_used_descriptors])
 
-    @staticmethod
-    def resample_image(image):
-        return np.round(np.array(image) / 8).astype(np.uint8)
+    def resample_image(self, image):
+        return np.round(np.array(image) / self.resample_ratio).astype(np.uint8)
+
+    def set_number_of_shades_of_gray(self, number_of_shades: int):
+        self.number_of_shades = number_of_shades
+        self.resample_ratio = int(round(255 / number_of_shades))
 
     def get_training_and_test_set_for_birads_class(self, birads_class):
         images = self.images[birads_class]
@@ -272,7 +277,7 @@ class Algorithms:
             'accuracy': accuracy
         }
 
-    def train(self, num_neurons = 32, num_epochs = 1000):
+    def train(self, num_neurons = 256, num_epochs = 2000):
         self.create_and_compile_model(num_neurons)
         self.get_training_and_test_set()
 
@@ -285,8 +290,8 @@ class Algorithms:
         executionTime = time.time() - start
 
         confusion_matrix = self.get_confusion_matrix()
-        # self.plot_confusion_matrix(confusion_matrix, self.BIRADS_CLASSES)
-        return executionTime, self.get_metrics(confusion_matrix, confusion_matrix)
+        self.plot_confusion_matrix(confusion_matrix, self.BIRADS_CLASSES)
+        return executionTime, self.get_metrics(confusion_matrix)
 
     def train_different_number_of_neurons_and_epochs(self):
         num_neurons_arr = [32, 64, 128, 256, 512, 1024]

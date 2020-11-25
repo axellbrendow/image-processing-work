@@ -11,6 +11,7 @@ from PIL import ImageTk, Image
 import pydicom
 
 from SelectCharacteristics import SelectCharacteristics
+from SetNumberOfShadesOfGray import SetNumberOfShadesOfGray
 from ShowCharacteristics import ShowCharacteristics
 from ShowMetrics import ShowMetrics
 from ZoomableImage import ZoomableImage
@@ -209,6 +210,27 @@ class MyWindow:
             ]
         )
 
+    def set_number_of_shades_of_gray(self):
+        window = self.set_number_of_shades_of_gray_window
+        number_of_shades = 32
+        try:
+            number_of_shades = int(window.numberOfShades.get())
+        except:
+            pass
+        self.algorithms.set_number_of_shades_of_gray(
+            number_of_shades
+        )
+        window.root.destroy()
+        window.root.update()
+
+    def open_set_number_of_shades_of_gray(self):
+        new_window = SetNumberOfShadesOfGray(self.root)
+        self.set_number_of_shades_of_gray_window = new_window
+        self.set_number_of_shades_of_gray_window.root.protocol(
+            "WM_DELETE_WINDOW",
+            self.set_number_of_shades_of_gray
+        )
+
     def classify_cropped_img(self):
         birads_class = 1 + self.algorithms.predict(
             self.algorithms.resample_image(self.cropped_img)
@@ -249,6 +271,10 @@ class MyWindow:
         self.options_menu.add_command(
             label="Classify the selected region",
             command=self.classify_cropped_img
+        )
+        self.options_menu.add_command(
+            label="Change number of shades of gray",
+            command=self.open_set_number_of_shades_of_gray
         )
 
         self.images_menu = tk.Menu(self.main_menu)
